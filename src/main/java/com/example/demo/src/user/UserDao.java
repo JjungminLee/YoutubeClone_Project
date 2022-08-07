@@ -58,11 +58,7 @@ public class UserDao {
      * ex) return this.jdbcTemplate.query( ~~~~ ) -> ~~~~쿼리문을 통해 얻은 결과를 반환합니다.
      */
 
-    /**
-     * 참고 링크
-     * https://jaehoney.tistory.com/34 -> JdbcTemplate 관련 함수에 대한 설명
-     * https://velog.io/@seculoper235/RowMapper%EC%97%90-%EB%8C%80%ED%95%B4 -> RowMapper에 대한 설명
-     */
+
 
     // [회원가입]
     public int createUser(PostUserReq postUserReq) {
