@@ -2,8 +2,6 @@ package com.example.demo.src.video;
 
 
 import com.example.demo.config.BaseException;
-import com.example.demo.config.BaseResponseStatus;
-import com.example.demo.src.user.UserDao;
 import com.example.demo.src.video.model.GetVideoRes;
 import com.example.demo.utils.JwtService;
 import org.slf4j.Logger;

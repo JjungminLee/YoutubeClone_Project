@@ -6,12 +6,13 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import static com.example.demo.config.BaseResponseStatus.SignUPSUCCESS;
+import static com.example.demo.config.BaseResponseStatus.ModifyVideoSUCCESS;
 
 @Getter
 @AllArgsConstructor
 @JsonPropertyOrder({"isSuccess", "code", "message", "result"})
-public class SignUpResponse<T> {
+
+public class VideoModifyResponse<T> {
 
     @JsonProperty("isSuccess")
     private final Boolean isSuccess;
@@ -21,10 +22,10 @@ public class SignUpResponse<T> {
     private T result;
 
     // 요청에 성공한 경우
-    public SignUpResponse(T result) {
-        this.isSuccess = SignUPSUCCESS.isSuccess();
-        this.message = SignUPSUCCESS.getMessage();
-        this.code = SignUPSUCCESS.getCode();
+    public VideoModifyResponse(T result) {
+        this.isSuccess = ModifyVideoSUCCESS.isSuccess();
+        this.message = ModifyVideoSUCCESS.getMessage();
+        this.code = ModifyVideoSUCCESS.getCode();
         this.result = result;
     }
 
@@ -33,7 +34,7 @@ public class SignUpResponse<T> {
 
 
     // 요청에 실패한 경우
-    public SignUpResponse(BaseResponseStatus status) {
+    public VideoModifyResponse(BaseResponseStatus status) {
         this.isSuccess = status.isSuccess();
         this.message = status.getMessage();
         this.code = status.getCode();

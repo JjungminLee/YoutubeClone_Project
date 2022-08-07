@@ -1,7 +1,8 @@
 package com.example.demo.src.video;
 
-import com.example.demo.src.user.model.GetUserRes;
 import com.example.demo.src.video.model.GetVideoRes;
+import com.example.demo.src.video.model.PatchVideoReq;
+import com.example.demo.src.video.model.PostVideoReq;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,6 +76,60 @@ public class VideoDao {
                         rs.getString("videoIntroduction")),
                 getVideosByVideoTitleParams
         );
+    }
+
+    //[POST] 영상 등록
+
+    public int createVideo(PostVideoReq postVideoReq){
+
+        //userName을 통해 게시자의 id를 찾아내는 쿼리 작성
+        int uploaderID;
+        String findUploaderIDQuery="SELECT USER.ID FROM USER INNER JOIN Video on Video.uploaderID=USER.ID where userName=?";
+        String findUploaderIDQueryParam=postVideoReq.getUserName();
+        uploaderID=this.jdbcTemplate.queryForObject(findUploaderIDQuery,int.class,findUploaderIDQueryParam);
+
+
+        String createVideoQuery="insert into Video(videoTitle,uploaderID,videoLength) VALUES(?,?,?)";
+        Object[]createVideoParams=new Object[]{postVideoReq.getVideoTitle(),uploaderID,postVideoReq.getVideoLength()};
+
+        this.jdbcTemplate.update(createVideoQuery,createVideoParams);
+
+        String lastInsertIdQuery="SELECT ID FROM Video ORDER BY ID DESC LIMIT 1";
+        int ans=this.jdbcTemplate.queryForObject(lastInsertIdQuery,int.class);
+        return ans;
+    }
+
+    //[PATCH] 영상 이름 수정
+
+    public int modifyVideoTitle(PatchVideoReq patchVideoReq){
+
+        //ID는 pathVariable의 ID
+        String modifyVideoTitleQuery="update Video set videoTitle=? where ID=?";
+        Object[] modifyVideoTitleParams=new Object[]{patchVideoReq.getVideoTitle(),patchVideoReq.getVideoID()};
+
+        return this.jdbcTemplate.update(modifyVideoTitleQuery,modifyVideoTitleParams);
+
+
+    }
+
+    //[PATCH] 영상 소개글 수정
+
+    public int modifyVideoIntro(PatchVideoReq patchVideoReq){
+        String modifyVideoIntroQuery="update Video set videoIntroduction=? where ID=?";
+        Object[]modifyVideoIntroParams=new Object[]{patchVideoReq.getChannelIntroduction(),patchVideoReq.getVideoID()};
+
+        return this.jdbcTemplate.update(modifyVideoIntroQuery,modifyVideoIntroParams);
+    }
+
+    //[PATCH] 영상 삭제
+
+    public int deleteVideo(PatchVideoReq patchVideoReq){
+        String deleteVideoQuery="update Video set status=? where ID=?";
+        Object[]deleteVideoIntoParams=new Object[]{patchVideoReq.getStatus(),patchVideoReq.getVideoID()};
+
+        return this.jdbcTemplate.update(deleteVideoQuery,deleteVideoIntoParams);
+
+
     }
 
 

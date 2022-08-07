@@ -15,11 +15,16 @@ public enum BaseResponseStatus {
     LogInSUCCESS(true,1002,"로그인에 성공하였습니다."),
     ModifyUserSUCCESS(true,1003,"유저 정보 수정에 성공하였습니다."),
 
+    //video
+    UploadSUCCESS(true,1004,"업로드에 성공하였습니다."),
+
+    ModifyVideoSUCCESS(true,1005,"영상 수정에 성공하였습니다."),
 
 
     /**
      * 2000 : Request 오류
      */
+
     // Common
     REQUEST_ERROR(false, 2000, "입력값을 확인해주세요."),
     EMPTY_JWT(false, 2001, "JWT를 입력해주세요."),
@@ -52,6 +57,14 @@ public enum BaseResponseStatus {
 
     POST_USER_INVALID_STATUS(false,2024,"존재하지 않는 유저입니다."),
 
+    //video
+
+    //[POST]Video
+    POST_VIDEO_EMPTY_TITLE(false,2025,"영상 제목을 확인해주세요."),
+    POST_VIDEO_EMPTY_UPLOADERNAME(false,2026,"게시자 이름을 확인하세요."),
+    POST_VIDEO_EMPTY_LENGTH(false,2027,"영상의 길이를 확인해주세요."),
+
+
 
 
     /**
@@ -76,6 +89,7 @@ public enum BaseResponseStatus {
     MODIFY_FAIL_USERNAME(false,4014,"유저네임 수정 실패"),
     MODIFY_FAIL_USERPWD(false,4015,"유저 비밀번호 수정 실패"),
 
+    MODIFY_FAIL_VIDEOTITLE(false,4016,"영상 제목 수정 실패"),
     PASSWORD_ENCRYPTION_ERROR(false, 4011, "비밀번호 암호화에 실패하였습니다."),
     PASSWORD_DECRYPTION_ERROR(false, 4012, "비밀번호 복호화에 실패하였습니다.");
 
