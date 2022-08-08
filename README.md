@@ -17,4 +17,5 @@
 
 ### 🌊 Step3. RestAPI 설계하기 
 ![img.png](img.png)
-추가중
+
+API 명세서 계속 수정 중 
