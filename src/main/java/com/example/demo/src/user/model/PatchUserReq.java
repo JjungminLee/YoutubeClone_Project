@@ -14,4 +14,5 @@ public class PatchUserReq {
     private int ID;
     private String userName;
     private String passWord;
+    private String status;
 }

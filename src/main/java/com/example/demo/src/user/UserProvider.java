@@ -10,8 +10,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.Entity;
 import java.util.List;
+
 import static com.example.demo.config.BaseResponseStatus.*;
 
 //Provider : Read의 비즈니스 로직 처리
@@ -130,6 +130,41 @@ public class UserProvider {
             GetUserRes getUserRes = userDao.getUser(userIdx);
             return getUserRes;
         } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    //채널 홈 정보 조회
+
+    public GetChannelRes getChannelFeature(String channelName)throws BaseException{
+        try {
+            GetChannelRes getChannelRes = userDao.getChannelFeature(channelName);
+            logger.warn("성공");
+            return getChannelRes;
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    //채널에서 업로드한 영상 조회
+
+    public List<GetChannelVideoRes>getChannelVideos(String channelName)throws BaseException{
+
+        try{
+            List<GetChannelVideoRes>getChannelVideoRes=userDao.getChannelVideos(channelName);
+            return getChannelVideoRes;
+        }catch(Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    //[GET] 채널 정보 조회
+
+    public GetChannelAbout getChannelAbout(String channelName)throws BaseException{
+        try{
+            GetChannelAbout getChannelAbout=userDao.getChannelAbout(channelName);
+            return  getChannelAbout;
+        }catch(Exception exception){
             throw new BaseException(DATABASE_ERROR);
         }
     }

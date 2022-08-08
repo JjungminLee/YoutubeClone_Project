@@ -3,10 +3,7 @@ package com.example.demo.src.user.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import javax.persistence.*;
 
 
 @Getter // 해당 클래스에 대한 접근자 생성
@@ -29,4 +26,5 @@ public class GetUserRes {
     private String passWord;
     private String country;
     private String birthDate;
+
 }

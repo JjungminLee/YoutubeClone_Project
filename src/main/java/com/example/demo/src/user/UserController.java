@@ -1,16 +1,14 @@
 package com.example.demo.src.user;
 
 import com.example.demo.config.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.example.demo.src.user.model.*;
 import com.example.demo.utils.JwtService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
 
 import static com.example.demo.config.BaseResponseStatus.*;
 import static com.example.demo.utils.ValidationRegex.*;
@@ -207,6 +205,54 @@ public class UserController {
 
     }
 
+
+    //[GET] 채널 홈 조회 /app/users?userName={userName}/featured
+
+    @ResponseBody
+    @GetMapping("/featured")
+    public BaseResponse <GetChannelRes> getChannelFeature(@RequestParam String channelName){
+        try{
+            GetChannelRes getChannelRes=userProvider.getChannelFeature(channelName);
+            return new BaseResponse<>(getChannelRes);
+        }
+        catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+
+    //[GET] 채널 영상 조회
+
+    @ResponseBody
+    @GetMapping("/videos")
+
+    public BaseResponse <List<GetChannelVideoRes>> getChannelVideos(@RequestParam String channelName){
+        try{
+            List<GetChannelVideoRes> getChannelVideoRes=userProvider.getChannelVideos(channelName);
+            return new BaseResponse<>(getChannelVideoRes);
+        }
+        catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    //[GET] 채널 정보 조회
+
+    @ResponseBody
+    @GetMapping("/about")
+
+    public BaseResponse<GetChannelAbout> getChannelAbout(@RequestParam String channelName){
+        try{
+            GetChannelAbout getChannelAbout=userProvider.getChannelAbout(channelName);
+            return new BaseResponse<>(getChannelAbout);
+        }
+        catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+    
+    
+
     /**
      * 유저정보변경 API
      * [PATCH] /users/:userIdx
@@ -228,11 +274,14 @@ public class UserController {
             //같다면 유저네임 변경
   **************************************************************************
  */
-            PatchUserReq patchUserReq = new PatchUserReq(ID, user.getUserName(),user.getPassWord());
+            PatchUserReq patchUserReq = new PatchUserReq(ID, user.getUserName(),user.getPassWord(),user.getStatus());
             //이름 변경
             userService.modifyUserName(patchUserReq);
             //패스워드 변경
             userService.modifyUserPassword(patchUserReq);
+
+
+
 
 
             String result = "회원정보가 수정되었습니다.";
@@ -244,4 +293,22 @@ public class UserController {
     
     
     //유저정보 삭제
+
+    @ResponseBody
+    @PatchMapping("/d/userID/{userID}")
+    public UserModifyResponse<String> modifyUserStatus(@PathVariable("userID") int ID, @RequestBody User user) {
+        try {
+                PatchUserReq patchUserReq = new PatchUserReq(ID, user.getUserName(),user.getPassWord(),user.getStatus());
+                userService.modifyUserStatus(patchUserReq);
+
+
+
+
+
+            String result = "회원탈퇴가 완료되었습니다.";
+            return new UserModifyResponse<>(result);
+        } catch (BaseException exception) {
+            return new UserModifyResponse<>((exception.getStatus()));
+        }
+    }
 }

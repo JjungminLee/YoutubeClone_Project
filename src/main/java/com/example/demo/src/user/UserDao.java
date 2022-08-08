@@ -1,18 +1,13 @@
 package com.example.demo.src.user;
 
 
-import com.example.demo.config.secret.Secret;
 import com.example.demo.src.user.model.*;
-import com.example.demo.utils.AES128;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.util.List;
@@ -58,7 +53,11 @@ public class UserDao {
      * ex) return this.jdbcTemplate.query( ~~~~ ) -> ~~~~쿼리문을 통해 얻은 결과를 반환합니다.
      */
 
-
+    /**
+     * 참고 링크
+     * https://jaehoney.tistory.com/34 -> JdbcTemplate 관련 함수에 대한 설명
+     * https://velog.io/@seculoper235/RowMapper%EC%97%90-%EB%8C%80%ED%95%B4 -> RowMapper에 대한 설명
+     */
 
     // [회원가입]
     public int createUser(PostUserReq postUserReq) {
@@ -120,6 +119,14 @@ public class UserDao {
         return this.jdbcTemplate.update(modifyUserPasswordQuery,modifyUserPasswordParams);
     }
 
+    //유저 상태변경(삭제)
+    public int modifyUserStatus(PatchUserReq patchUserReq){
+        String modifyUserPasswordQuery="update USER set status=? where ID=?";
+        //이미 변경 된 비밀번호가 들어가야함. 즉 암호화돼서 들어가야
+        Object[] modifyUserPasswordParams=new Object[]{patchUserReq.getStatus(),patchUserReq.getID()};
+        return this.jdbcTemplate.update(modifyUserPasswordQuery,modifyUserPasswordParams);
+    }
+
 
     // [로그인]: 해당 userName에 해당되는 user의 암호화된 비밀번호 값을 가져온다.
     public User getPwd(PostLoginReq postLoginReq) {
@@ -177,5 +184,107 @@ public class UserDao {
                         rs.getString("country") ,
                         rs.getString("birthDate")), // RowMapper(위의 링크 참조): 원하는 결과값 형태로 받기
                 getUserParams); // 한 개의 회원정보를 얻기 위한 jdbcTemplate 함수(Query, 객체 매핑 정보, Params)의 결과 반환
+    }
+
+    //[GET] 채널 홈 정보 조회
+
+    public GetChannelRes getChannelFeature(String userName){
+
+        //채널의 아이디(userID)
+
+        String getUserIDQuery="select USER.ID FROM USER WHERE userName=?";
+        String userNameParams=userName;
+        int channelID=this.jdbcTemplate.queryForObject(getUserIDQuery,int.class,userNameParams);
+
+        
+        //구독자수 구하기
+        String getSubscriberQuery="select (select count(Subscribe.channelID=USER.ID) from Subscribe where Subscribe.channelID=USER.ID) as subscriber " +
+                "FROM USER where USER.ID=?";
+        int subscribers=this.jdbcTemplate.queryForObject(getSubscriberQuery,int.class,channelID);
+
+        logger.warn(String.valueOf(subscribers));
+
+        String getChannelResQuery= "select * " +
+                "from USER WHERE USER.ID=?";
+        int getChannelResParams=channelID;
+
+        return this.jdbcTemplate.queryForObject(getChannelResQuery,
+                (rs,rowNum)->new GetChannelRes(
+                        rs.getString("bannerImg"),
+                        rs.getString("userProfileImg"),
+                        rs.getString("userName"),
+                        subscribers
+
+               ),getChannelResParams);
+
+
+
+
+    }
+
+    //[GET] 채널 업로드 영상 조회
+    public List<GetChannelVideoRes>getChannelVideos(String channelName){
+        //채널의 아이디(userID)
+
+        String getUserIDQuery="select USER.ID FROM USER WHERE userName=?";
+        String userNameParams=channelName;
+        int channelID=this.jdbcTemplate.queryForObject(getUserIDQuery,int.class,userNameParams);
+
+        String getChannelVideoResQuery="select videoTitle,(select count(View.videoID=Video.ID)from View where View.videoID=Video.ID )as views" +
+                " FROM Video INNER JOIN USER ON USER.ID=Video.uploaderID " +
+                "WHERE USER.ID=?";
+
+        return jdbcTemplate.query(getChannelVideoResQuery,
+                (rs,rowNum)->new GetChannelVideoRes(
+                        rs.getString("videoTitle"),
+                        rs.getInt("views")
+
+        ),channelID);
+
+    }
+    
+    //[GET] 채널 정보 조회
+
+    public GetChannelAbout getChannelAbout(String channelName){
+
+        logger.warn("여기까지 왔다.");
+
+        String getUserIDQuery="select USER.ID FROM USER WHERE userName=?";
+        String userNameParams=channelName;
+        int channelID=this.jdbcTemplate.queryForObject(getUserIDQuery,int.class,userNameParams);
+
+
+
+        //구독자수 구하기
+        String getSubscriberQuery="select (select count(Subscribe.channelID=USER.ID) from Subscribe where Subscribe.channelID=USER.ID) as subscriber " +
+                "FROM USER where USER.ID=?";
+        int subscribers=this.jdbcTemplate.queryForObject(getSubscriberQuery,int.class,channelID);
+
+
+        //가입일 구하는 쿼리
+        String getCreateDateQuery="select date_format(USER.createdAt,'%Y.%m.%d') from USER WHERE USER.ID=?";
+        String createDate=this.jdbcTemplate.queryForObject(getCreateDateQuery,String.class,channelID);
+
+        logger.warn(createDate);
+
+        //총 조회수 구하는 쿼리
+
+        String getSumViewsQuery="select sum((select count(View.videoID) FROM View Where View.videoID=Video.ID)) as sumViews " +
+                "from USER INNER JOIN Video on Video.uploaderID=USER.ID where USER.ID=?";
+        int sumViews=this.jdbcTemplate.queryForObject(getSumViewsQuery,int.class,channelID);
+
+        logger.warn(String.valueOf(sumViews));
+
+        String getChannelAboutQuery="select * from USER WHERE USER.ID=?";
+
+        return this.jdbcTemplate.queryForObject(getChannelAboutQuery,(rs,rowNum)-> new GetChannelAbout(
+                rs.getString("userName"),
+                subscribers,
+                rs.getString("channelIntroduction"),
+                createDate,
+                sumViews
+
+        ),channelID);
+
     }
 }

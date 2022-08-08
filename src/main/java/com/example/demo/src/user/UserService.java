@@ -3,17 +3,16 @@ package com.example.demo.src.user;
 
 import com.example.demo.config.BaseException;
 import com.example.demo.config.secret.Secret;
-import com.example.demo.src.user.model.*;
+import com.example.demo.src.user.model.PatchUserReq;
+import com.example.demo.src.user.model.PostUserReq;
+import com.example.demo.src.user.model.PostUserRes;
 import com.example.demo.utils.AES128;
 import com.example.demo.utils.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.jdbc.core.JdbcTemplate;
 
-import javax.sound.midi.Patch;
-import javax.sql.DataSource;
 import static com.example.demo.config.BaseResponseStatus.*;
 
 /**
@@ -72,11 +71,6 @@ public class UserService {
         try {
 
 
-            logger.trace( id);
-            logger.debug(id);
-            logger.info(id);
-            logger.warn(id);
-            logger.error(id);
             return new PostUserRes(userIdx);
 
 //  *********** 해당 부분은 7주차 수업 후 주석해제하서 대체해서 사용해주세요! ***********
@@ -120,6 +114,18 @@ public class UserService {
             int result=userDao.modifyUserPassword(patchUserReq);
             if(result==0){
                 throw  new BaseException(MODIFY_FAIL_USERPWD);
+            }
+        }catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    //유저 상태 변경 (삭제처리)
+    public void modifyUserStatus(PatchUserReq patchUserReq)throws BaseException{
+        try{
+            int result=userDao.modifyUserStatus(patchUserReq);
+            if(result==0){
+                throw  new BaseException(MODIFY_FAIL_DELETE_USER);
             }
         }catch (Exception exception){
             throw new BaseException(DATABASE_ERROR);
