@@ -24,4 +24,4 @@ RestAPI를 리액트 axios와 연결한 모습 ([GET]app/video)
 
 ![img_3.png](img_3.png)
 
-작업일지:
+작업일지:https://meaningland02.tistory.com/45
