@@ -16,6 +16,12 @@
 작업일지: https://meaningland02.tistory.com/25
 
 ### 🌊 Step3. RestAPI 설계하기 
+
 ![img.png](img.png)
 
-API 명세서 계속 수정 중 
+
+RestAPI를 리액트 axios와 연결한 모습 ([GET]app/video)
+
+![img_3.png](img_3.png)
+
+작업일지:
